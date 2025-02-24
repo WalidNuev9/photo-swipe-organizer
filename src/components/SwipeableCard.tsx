@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Trash, Check } from 'lucide-react';
+import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 
 interface SwipeableCardProps {
   imageUrl: string;
@@ -14,6 +15,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [showLeftOverlay, setShowLeftOverlay] = useState(false);
   const [showRightOverlay, setShowRightOverlay] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [{ x }, api] = useSpring(() => ({
     x: 0,
@@ -58,54 +60,76 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
     const currentX = x.get();
     
     if (currentX < -100) {
-      api.start({ x: -500, onRest: () => onSwipe('left') });
+      setShowDeleteDialog(true);
     } else if (currentX > 100) {
       api.start({ x: 500, onRest: () => onSwipe('right') });
     } else {
-      api.start({ x: 0 });
+      resetPosition();
     }
     
     setShowLeftOverlay(false);
     setShowRightOverlay(false);
   };
 
+  const resetPosition = () => {
+    api.start({ x: 0 });
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    resetPosition();
+  };
+
+  const handleDeleteConfirm = () => {
+    setShowDeleteDialog(false);
+    api.start({ x: -500, onRest: () => onSwipe('left') });
+  };
+
   return (
-    <animated.div
-      ref={cardRef}
-      className={`swipeable-card relative ${isDragging ? 'swiping' : ''}`}
-      style={{ 
-        x,
-        touchAction: 'none',
-        userSelect: 'none'
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      <img 
-        src={imageUrl} 
-        alt="Content" 
-        className="w-full h-full object-cover rounded-xl"
+    <>
+      <animated.div
+        ref={cardRef}
+        className={`swipeable-card relative ${isDragging ? 'swiping' : ''}`}
+        style={{ 
+          x,
+          touchAction: 'none',
+          userSelect: 'none'
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <img 
+          src={imageUrl} 
+          alt="Content" 
+          className="w-full h-full object-cover rounded-xl"
+        />
+        <div 
+          className={`action-overlay left absolute inset-0 flex items-center justify-center bg-danger/20 transition-opacity ${
+            showLeftOverlay ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <Trash className="w-16 h-16 text-danger" strokeWidth={1.5} />
+        </div>
+        <div 
+          className={`action-overlay right absolute inset-0 flex items-center justify-center bg-success/20 transition-opacity ${
+            showRightOverlay ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <Check className="w-16 h-16 text-success" strokeWidth={1.5} />
+        </div>
+      </animated.div>
+
+      <DeleteConfirmationDialog
+        isOpen={showDeleteDialog}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
       />
-      <div 
-        className={`action-overlay left absolute inset-0 flex items-center justify-center bg-danger/20 transition-opacity ${
-          showLeftOverlay ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        <Trash className="w-16 h-16 text-danger" strokeWidth={1.5} />
-      </div>
-      <div 
-        className={`action-overlay right absolute inset-0 flex items-center justify-center bg-success/20 transition-opacity ${
-          showRightOverlay ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        <Check className="w-16 h-16 text-success" strokeWidth={1.5} />
-      </div>
-    </animated.div>
+    </>
   );
 };
 
