@@ -1,21 +1,33 @@
 
 import React, { useState } from 'react';
+import { ArrowLeftRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import SwipeableCard from '@/components/SwipeableCard';
 import ProgressBar from '@/components/ProgressBar';
 import { useToast } from '@/hooks/use-toast';
 
-// Simulons quelques images pour la démo
-const demoImages = [
-  'https://picsum.photos/800/1200?random=1',
-  'https://picsum.photos/800/1200?random=2',
-  'https://picsum.photos/800/1200?random=3',
-  'https://picsum.photos/800/1200?random=4',
-  'https://picsum.photos/800/1200?random=5',
-];
-
 const Index = () => {
+  const [started, setStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { toast } = useToast();
+
+  // Images de démonstration
+  const demoImages = [
+    'https://picsum.photos/800/1200?random=1',
+    'https://picsum.photos/800/1200?random=2',
+    'https://picsum.photos/800/1200?random=3',
+    'https://picsum.photos/800/1200?random=4',
+    'https://picsum.photos/800/1200?random=5',
+  ];
+
+  const handleStart = () => {
+    setStarted(true);
+    toast({
+      title: "Accès aux photos",
+      description: "Demande d'accès à vos photos...",
+      duration: 2000,
+    });
+  };
 
   const handleSwipe = (direction: 'left' | 'right') => {
     const action = direction === 'left' ? 'supprimée' : 'conservée';
@@ -26,6 +38,37 @@ const Index = () => {
     
     setCurrentIndex(prev => prev + 1);
   };
+
+  if (!started) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 space-y-8">
+        <h1 className="text-4xl md:text-5xl font-bold text-center">
+          Swipe & Organise
+        </h1>
+        
+        <div className="text-center space-y-6">
+          <p className="text-muted-foreground text-lg">
+            Swipez à gauche pour supprimer, à droite pour garder
+          </p>
+          
+          <div className="relative">
+            <ArrowLeftRight 
+              className="w-12 h-12 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
+              strokeWidth={1.5}
+            />
+          </div>
+        </div>
+
+        <Button 
+          onClick={handleStart}
+          size="lg"
+          className="mt-8 text-lg px-8"
+        >
+          Commencer
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/20 p-4">
