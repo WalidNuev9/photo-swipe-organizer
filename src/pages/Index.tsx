@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 import SwipeableCard from '@/components/SwipeableCard';
 import ProgressBar from '@/components/ProgressBar';
 import { useToast } from '@/hooks/use-toast';
+import PhotoAccessModal from '@/components/PhotoAccessModal';
+import PhotoPermissionDeniedModal from '@/components/PhotoPermissionDeniedModal';
 
 const Index = () => {
   const [started, setStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showDeniedModal, setShowDeniedModal] = useState(false);
   const { toast } = useToast();
 
   // Images de démonstration
@@ -21,12 +25,27 @@ const Index = () => {
   ];
 
   const handleStart = () => {
+    setShowPhotoModal(true);
+  };
+
+  const handleAuthorize = () => {
+    setShowPhotoModal(false);
     setStarted(true);
     toast({
-      title: "Accès aux photos",
-      description: "Demande d'accès à vos photos...",
+      title: "Accès autorisé",
+      description: "Vous pouvez maintenant trier vos photos",
       duration: 2000,
     });
+  };
+
+  const handleDeny = () => {
+    setShowPhotoModal(false);
+    setShowDeniedModal(true);
+  };
+
+  const handleRetry = () => {
+    setShowDeniedModal(false);
+    setShowPhotoModal(true);
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -41,32 +60,45 @@ const Index = () => {
 
   if (!started) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 space-y-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-center">
-          Swipe & Organise
-        </h1>
-        
-        <div className="text-center space-y-6">
-          <p className="text-muted-foreground text-lg">
-            Swipez à gauche pour supprimer, à droite pour garder
-          </p>
+      <>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 space-y-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-center">
+            Swipe & Organise
+          </h1>
           
-          <div className="relative">
-            <ArrowLeftRight 
-              className="w-12 h-12 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
-              strokeWidth={1.5}
-            />
+          <div className="text-center space-y-6">
+            <p className="text-muted-foreground text-lg">
+              Swipez à gauche pour supprimer, à droite pour garder
+            </p>
+            
+            <div className="relative">
+              <ArrowLeftRight 
+                className="w-12 h-12 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
+                strokeWidth={1.5}
+              />
+            </div>
           </div>
+
+          <Button 
+            onClick={handleStart}
+            size="lg"
+            className="mt-8 text-lg px-8"
+          >
+            Commencer
+          </Button>
         </div>
 
-        <Button 
-          onClick={handleStart}
-          size="lg"
-          className="mt-8 text-lg px-8"
-        >
-          Commencer
-        </Button>
-      </div>
+        <PhotoAccessModal 
+          isOpen={showPhotoModal}
+          onAuthorize={handleAuthorize}
+          onDeny={handleDeny}
+        />
+
+        <PhotoPermissionDeniedModal
+          isOpen={showDeniedModal}
+          onRetry={handleRetry}
+        />
+      </>
     );
   }
 
@@ -103,3 +135,4 @@ const Index = () => {
 };
 
 export default Index;
+
