@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowLeftRight } from 'lucide-react';
+import { ArrowLeftRight, Undo2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import SwipeableCard from '@/components/SwipeableCard';
 import ProgressBar from '@/components/ProgressBar';
@@ -13,6 +13,7 @@ const Index = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showDeniedModal, setShowDeniedModal] = useState(false);
+  const [history, setHistory] = useState<Array<{ index: number; action: 'left' | 'right' }>>([]);
   const { toast } = useToast();
 
   // Images de démonstration
@@ -55,7 +56,21 @@ const Index = () => {
       duration: 1500,
     });
     
+    setHistory(prev => [...prev, { index: currentIndex, action: direction }]);
     setCurrentIndex(prev => prev + 1);
+  };
+
+  const handleUndo = () => {
+    if (history.length === 0) return;
+    
+    const lastAction = history[history.length - 1];
+    setCurrentIndex(lastAction.index);
+    setHistory(prev => prev.slice(0, -1));
+    
+    toast({
+      description: "Action annulée",
+      duration: 1500,
+    });
   };
 
   if (!started) {
@@ -103,36 +118,56 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/20 p-4">
-      <div className="mb-8 text-center">
-        <h2 className="text-sm font-medium text-muted-foreground mb-2">
-          {currentIndex + 1} / {demoImages.length}
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/20 p-4">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          {demoImages.length - currentIndex} restantes
         </h2>
-      </div>
-      
-      <div className="relative w-full max-w-md mx-auto">
-        {currentIndex < demoImages.length ? (
-          <SwipeableCard
-            imageUrl={demoImages[currentIndex]}
-            onSwipe={handleSwipe}
-          />
-        ) : (
-          <div className="text-center p-8">
-            <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
-            <p className="text-muted-foreground">
-              Vous avez trié toutes vos photos.
-            </p>
-          </div>
-        )}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleUndo}
+          disabled={history.length === 0}
+          className="rounded-full"
+        >
+          <Undo2 className="w-4 h-4" />
+          <span className="sr-only">Annuler la dernière action</span>
+        </Button>
       </div>
       
       <ProgressBar
         current={currentIndex}
         total={demoImages.length}
       />
+      
+      <div className="flex-1 flex items-center justify-center my-8">
+        <div className="relative w-full max-w-md aspect-[3/4]">
+          {currentIndex < demoImages.length ? (
+            <SwipeableCard
+              imageUrl={demoImages[currentIndex]}
+              onSwipe={handleSwipe}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-xl shadow-lg">
+              <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
+              <p className="text-muted-foreground">
+                Vous avez trié toutes vos photos.
+              </p>
+              <Button 
+                onClick={() => {
+                  setCurrentIndex(0);
+                  setHistory([]);
+                }}
+                className="mt-8"
+              >
+                Recommencer
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Index;
-

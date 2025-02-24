@@ -1,6 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useSpring, animated } from '@react-spring/web';
+import { Trash, Check } from 'lucide-react';
 
 interface SwipeableCardProps {
   imageUrl: string;
@@ -71,8 +72,12 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
   return (
     <animated.div
       ref={cardRef}
-      className={`swipeable-card ${isDragging ? 'swiping' : ''}`}
-      style={{ x }}
+      className={`swipeable-card relative ${isDragging ? 'swiping' : ''}`}
+      style={{ 
+        x,
+        touchAction: 'none',
+        userSelect: 'none'
+      }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -81,12 +86,24 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <img src={imageUrl} alt="Swipeable content" />
-      <div className={`action-overlay left ${showLeftOverlay ? 'visible' : ''}`}>
-        Supprimer
+      <img 
+        src={imageUrl} 
+        alt="Content" 
+        className="w-full h-full object-cover rounded-xl"
+      />
+      <div 
+        className={`action-overlay left absolute inset-0 flex items-center justify-center bg-danger/20 transition-opacity ${
+          showLeftOverlay ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <Trash className="w-16 h-16 text-danger" strokeWidth={1.5} />
       </div>
-      <div className={`action-overlay right ${showRightOverlay ? 'visible' : ''}`}>
-        Garder
+      <div 
+        className={`action-overlay right absolute inset-0 flex items-center justify-center bg-success/20 transition-opacity ${
+          showRightOverlay ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <Check className="w-16 h-16 text-success" strokeWidth={1.5} />
       </div>
     </animated.div>
   );
