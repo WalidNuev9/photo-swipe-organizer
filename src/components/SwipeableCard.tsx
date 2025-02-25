@@ -17,8 +17,9 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
   const [showRightOverlay, setShowRightOverlay] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const [{ x }, api] = useSpring(() => ({
+  const [{ x, opacity }, api] = useSpring(() => ({
     x: 0,
+    opacity: 1,
     config: { tension: 300, friction: 20 },
   }));
 
@@ -47,7 +48,10 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
   };
 
   const updatePosition = (diff: number) => {
-    api.start({ x: diff });
+    api.start({ 
+      x: diff,
+      opacity: Math.max(1 - Math.abs(diff) / 500, 0),
+    });
     setShowLeftOverlay(diff < -50);
     setShowRightOverlay(diff > 50);
   };
@@ -62,7 +66,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
     if (currentX < -100) {
       setShowDeleteDialog(true);
     } else if (currentX > 100) {
-      api.start({ x: 500, onRest: () => onSwipe('right') });
+      animateSwipeOut('right');
     } else {
       resetPosition();
     }
@@ -72,7 +76,17 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
   };
 
   const resetPosition = () => {
-    api.start({ x: 0 });
+    api.start({ x: 0, opacity: 1 });
+  };
+
+  const animateSwipeOut = (direction: 'left' | 'right') => {
+    const xOffset = direction === 'left' ? -500 : 500;
+    api.start({ 
+      x: xOffset,
+      opacity: 0,
+      config: { tension: 200, friction: 15 },
+      onRest: () => onSwipe(direction),
+    });
   };
 
   const handleDeleteCancel = () => {
@@ -82,16 +96,17 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ imageUrl, onSwipe }) => {
 
   const handleDeleteConfirm = () => {
     setShowDeleteDialog(false);
-    api.start({ x: -500, onRest: () => onSwipe('left') });
+    animateSwipeOut('left');
   };
 
   return (
     <>
       <animated.div
         ref={cardRef}
-        className={`swipeable-card relative ${isDragging ? 'swiping' : ''}`}
+        className={`swipeable-card absolute inset-0 ${isDragging ? 'swiping' : ''}`}
         style={{ 
           x,
+          opacity,
           touchAction: 'none',
           userSelect: 'none'
         }}
