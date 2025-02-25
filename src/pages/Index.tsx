@@ -7,6 +7,7 @@ import ProgressBar from '@/components/ProgressBar';
 import { useToast } from '@/hooks/use-toast';
 import PhotoAccessModal from '@/components/PhotoAccessModal';
 import PhotoPermissionDeniedModal from '@/components/PhotoPermissionDeniedModal';
+import SettingsMenu from '@/components/SettingsMenu';
 
 const Index = () => {
   const [started, setStarted] = useState(false);
@@ -77,6 +78,10 @@ const Index = () => {
     return (
       <>
         <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 space-y-8">
+          <div className="absolute top-4 right-4">
+            <SettingsMenu />
+          </div>
+          
           <h1 className="text-4xl md:text-5xl font-bold text-center">
             Swipe & Organise
           </h1>
@@ -123,16 +128,19 @@ const Index = () => {
         <h2 className="text-sm font-medium text-muted-foreground">
           {demoImages.length - currentIndex} restantes
         </h2>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleUndo}
-          disabled={history.length === 0}
-          className="rounded-full"
-        >
-          <Undo2 className="w-4 h-4" />
-          <span className="sr-only">Annuler la dernière action</span>
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleUndo}
+            disabled={history.length === 0}
+            className="rounded-full"
+          >
+            <Undo2 className="w-4 h-4" />
+            <span className="sr-only">Annuler la dernière action</span>
+          </Button>
+          <SettingsMenu />
+        </div>
       </div>
       
       <ProgressBar
