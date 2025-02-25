@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowLeftRight, Undo2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -16,9 +15,9 @@ const Index = () => {
   const [showDeniedModal, setShowDeniedModal] = useState(false);
   const [history, setHistory] = useState<Array<{ index: number; action: 'left' | 'right' }>>([]);
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
+  const [isPreloading, setIsPreloading] = useState(true);
   const { toast } = useToast();
 
-  // Images de démonstration
   const demoImages = [
     'https://picsum.photos/800/1200?random=1',
     'https://picsum.photos/800/1200?random=2',
@@ -27,9 +26,9 @@ const Index = () => {
     'https://picsum.photos/800/1200?random=5',
   ];
 
-  // Préchargement des images
   useEffect(() => {
     const preloadImages = async () => {
+      setIsPreloading(true);
       const loadPromises = demoImages.map((src) => {
         return new Promise<string>((resolve, reject) => {
           const img = new Image();
@@ -44,6 +43,8 @@ const Index = () => {
         setLoadedImages(loaded);
       } catch (error) {
         console.error('Erreur lors du chargement des images:', error);
+      } finally {
+        setIsPreloading(false);
       }
     };
 
@@ -51,6 +52,13 @@ const Index = () => {
       preloadImages();
     }
   }, [started]);
+
+  useEffect(() => {
+    if (currentIndex < demoImages.length - 1) {
+      const nextImage = new Image();
+      nextImage.src = demoImages[currentIndex + 1];
+    }
+  }, [currentIndex, demoImages]);
 
   const handleStart = () => {
     setShowPhotoModal(true);
@@ -77,6 +85,8 @@ const Index = () => {
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
+    if (currentIndex >= demoImages.length) return;
+    
     const action = direction === 'left' ? 'supprimée' : 'conservée';
     toast({
       description: `Image ${action}`,
@@ -176,32 +186,30 @@ const Index = () => {
       
       <div className="flex-1 flex items-center justify-center my-8">
         <div className="relative w-full max-w-md aspect-[3/4]">
-          {loadedImages.length > 0 && currentIndex < demoImages.length ? (
+          {isPreloading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-card rounded-xl shadow-lg">
+              <p className="text-muted-foreground">Chargement des images...</p>
+            </div>
+          ) : loadedImages.length > 0 && currentIndex < demoImages.length ? (
             <SwipeableCard
               imageUrl={loadedImages[currentIndex]}
               onSwipe={handleSwipe}
             />
           ) : (
             <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-xl shadow-lg">
-              {loadedImages.length === 0 ? (
-                <p className="text-muted-foreground">Chargement des images...</p>
-              ) : (
-                <>
-                  <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
-                  <p className="text-muted-foreground">
-                    Vous avez trié toutes vos photos.
-                  </p>
-                  <Button 
-                    onClick={() => {
-                      setCurrentIndex(0);
-                      setHistory([]);
-                    }}
-                    className="mt-8"
-                  >
-                    Recommencer
-                  </Button>
-                </>
-              )}
+              <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
+              <p className="text-muted-foreground">
+                Vous avez trié toutes vos photos.
+              </p>
+              <Button 
+                onClick={() => {
+                  setCurrentIndex(0);
+                  setHistory([]);
+                }}
+                className="mt-8"
+              >
+                Recommencer
+              </Button>
             </div>
           )}
         </div>
@@ -211,4 +219,3 @@ const Index = () => {
 };
 
 export default Index;
-
