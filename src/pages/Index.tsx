@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeftRight, Undo2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import SwipeableCard from '@/components/SwipeableCard';
@@ -15,6 +15,7 @@ const Index = () => {
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showDeniedModal, setShowDeniedModal] = useState(false);
   const [history, setHistory] = useState<Array<{ index: number; action: 'left' | 'right' }>>([]);
+  const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Images de démonstration
@@ -25,6 +26,31 @@ const Index = () => {
     'https://picsum.photos/800/1200?random=4',
     'https://picsum.photos/800/1200?random=5',
   ];
+
+  // Préchargement des images
+  useEffect(() => {
+    const preloadImages = async () => {
+      const loadPromises = demoImages.map((src) => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = () => resolve(src);
+          img.onerror = reject;
+        });
+      });
+
+      try {
+        const loaded = await Promise.all(loadPromises);
+        setLoadedImages(loaded);
+      } catch (error) {
+        console.error('Erreur lors du chargement des images:', error);
+      }
+    };
+
+    if (started) {
+      preloadImages();
+    }
+  }, [started]);
 
   const handleStart = () => {
     setShowPhotoModal(true);
@@ -150,26 +176,32 @@ const Index = () => {
       
       <div className="flex-1 flex items-center justify-center my-8">
         <div className="relative w-full max-w-md aspect-[3/4]">
-          {currentIndex < demoImages.length ? (
+          {loadedImages.length > 0 && currentIndex < demoImages.length ? (
             <SwipeableCard
-              imageUrl={demoImages[currentIndex]}
+              imageUrl={loadedImages[currentIndex]}
               onSwipe={handleSwipe}
             />
           ) : (
             <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-xl shadow-lg">
-              <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
-              <p className="text-muted-foreground">
-                Vous avez trié toutes vos photos.
-              </p>
-              <Button 
-                onClick={() => {
-                  setCurrentIndex(0);
-                  setHistory([]);
-                }}
-                className="mt-8"
-              >
-                Recommencer
-              </Button>
+              {loadedImages.length === 0 ? (
+                <p className="text-muted-foreground">Chargement des images...</p>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
+                  <p className="text-muted-foreground">
+                    Vous avez trié toutes vos photos.
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      setCurrentIndex(0);
+                      setHistory([]);
+                    }}
+                    className="mt-8"
+                  >
+                    Recommencer
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -179,3 +211,4 @@ const Index = () => {
 };
 
 export default Index;
+
