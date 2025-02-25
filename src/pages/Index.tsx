@@ -31,7 +31,7 @@ const Index = () => {
   useEffect(() => {
     const preloadImages = async () => {
       const loadPromises = demoImages.map((src) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
           const img = new Image();
           img.src = src;
           img.onload = () => resolve(src);
