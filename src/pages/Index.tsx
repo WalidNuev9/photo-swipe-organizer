@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { ArrowLeftRight, Undo2 } from 'lucide-react';
+import { ArrowLeftRight, Undo2, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import SwipeableCard from '@/components/SwipeableCard';
 import ProgressBar from '@/components/ProgressBar';
@@ -84,6 +85,16 @@ const Index = () => {
     setShowPhotoModal(true);
   };
 
+  const handleProfile = () => {
+    // Pour l'instant, on affiche juste une notification
+    // Cette fonction sera mise à jour quand on ajoutera l'authentification
+    toast({
+      title: "Profil",
+      description: "Fonctionnalité bientôt disponible",
+      duration: 2000,
+    });
+  };
+
   const handleSwipe = (direction: 'left' | 'right') => {
     if (currentIndex >= demoImages.length) return;
     
@@ -114,7 +125,16 @@ const Index = () => {
     return (
       <>
         <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 space-y-8">
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleProfile}
+              className="rounded-full"
+            >
+              <User className="w-5 h-5" />
+              <span className="sr-only">Profil</span>
+            </Button>
             <SettingsMenu />
           </div>
           
@@ -174,6 +194,15 @@ const Index = () => {
           >
             <Undo2 className="w-4 h-4" />
             <span className="sr-only">Annuler la dernière action</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleProfile}
+            className="rounded-full"
+          >
+            <User className="w-5 h-5" />
+            <span className="sr-only">Profil</span>
           </Button>
           <SettingsMenu />
         </div>
