@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, Sun, SortDesc, BookOpen, FileText } from 'lucide-react';
+import { Settings, Sun, Moon, SortDesc, BookOpen, FileText, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -19,15 +19,21 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from "next-themes";
 
 const SettingsMenu = () => {
-  const handleDarkModeToggle = () => {
-    // Implémentation du mode sombre à venir
-    console.log("Toggle dark mode");
+  const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+  
+  const handleDarkModeToggle = (checked: boolean) => {
+    setTheme(checked ? "dark" : "light");
   };
 
   const handleSortChange = (value: string) => {
-    console.log("Sort by:", value);
+    if (value === 'date') {
+      navigate('/sort');
+    }
   };
 
   const handleTutorialClick = () => {
@@ -51,10 +57,17 @@ const SettingsMenu = () => {
           {/* Mode Sombre */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Sun className="w-4 h-4" />
+              {theme === "dark" ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
               <Label>Mode Sombre</Label>
             </div>
-            <Switch onCheckedChange={handleDarkModeToggle} />
+            <Switch 
+              checked={theme === "dark"}
+              onCheckedChange={handleDarkModeToggle}
+            />
           </div>
 
           <Separator />
@@ -62,7 +75,7 @@ const SettingsMenu = () => {
           {/* Trier par */}
           <div className="space-y-2">
             <div className="flex items-center space-x-4">
-              <SortDesc className="w-4 h-4" />
+              <Clock className="w-4 h-4" />
               <Label>Trier par</Label>
             </div>
             <Select onValueChange={handleSortChange}>
@@ -70,14 +83,22 @@ const SettingsMenu = () => {
                 <SelectValue placeholder="Sélectionner un tri" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="date">Date</SelectItem>
-                <SelectItem value="size">Taille</SelectItem>
-                <SelectItem value="type">Type</SelectItem>
+                <SelectItem value="date">Par date</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Separator />
+
+          {/* Profile */}
+          <Button
+            variant="outline"
+            className="w-full justify-start space-x-2"
+            onClick={() => navigate('/profile')}
+          >
+            <User className="w-4 h-4" />
+            <span>Mon profil</span>
+          </Button>
 
           {/* Voir le tutoriel */}
           <Button
