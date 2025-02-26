@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowLeftRight, Undo2, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import PhotoAccessModal from '@/components/PhotoAccessModal';
 import PhotoPermissionDeniedModal from '@/components/PhotoPermissionDeniedModal';
 import SettingsMenu from '@/components/SettingsMenu';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [started, setStarted] = useState(false);
@@ -18,6 +18,7 @@ const Index = () => {
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const [isPreloading, setIsPreloading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const demoImages = [
     'https://picsum.photos/800/1200?random=1',
@@ -86,13 +87,7 @@ const Index = () => {
   };
 
   const handleProfile = () => {
-    // Pour l'instant, on affiche juste une notification
-    // Cette fonction sera mise à jour quand on ajoutera l'authentification
-    toast({
-      title: "Profil",
-      description: "Fonctionnalité bientôt disponible",
-      duration: 2000,
-    });
+    navigate('/profile');
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
