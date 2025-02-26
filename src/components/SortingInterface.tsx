@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Undo2, User } from 'lucide-react';
+import { Undo2, User, Trash2, Share, Bookmark, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import SwipeableCard from '@/components/SwipeableCard';
 import ProgressBar from '@/components/ProgressBar';
@@ -32,6 +32,16 @@ const SortingInterface: React.FC<SortingInterfaceProps> = ({
 
   const handleProfile = () => {
     navigate('/profile');
+  };
+
+  const handleShare = () => {
+    // Todo: Implement share functionality
+    console.log('Share clicked');
+  };
+
+  const handleBookmark = () => {
+    // Todo: Implement bookmark functionality
+    console.log('Bookmark clicked');
   };
 
   return (
@@ -76,10 +86,50 @@ const SortingInterface: React.FC<SortingInterfaceProps> = ({
               <p className="text-muted-foreground">Chargement des images...</p>
             </div>
           ) : imageUrl ? (
-            <SwipeableCard
-              imageUrl={imageUrl}
-              onSwipe={onSwipe}
-            />
+            <>
+              <SwipeableCard
+                imageUrl={imageUrl}
+                onSwipe={onSwipe}
+              />
+              <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-4 pb-6">
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => onSwipe('left')}
+                  className="h-14 w-14 rounded-full shadow-lg bg-danger hover:bg-danger/90"
+                >
+                  <Trash2 className="w-6 h-6" />
+                  <span className="sr-only">Supprimer</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleShare}
+                  className="h-14 w-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/90"
+                >
+                  <Share className="w-6 h-6" />
+                  <span className="sr-only">Partager</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleBookmark}
+                  className="h-14 w-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/90"
+                >
+                  <Bookmark className="w-6 h-6" />
+                  <span className="sr-only">Marquer</span>
+                </Button>
+                <Button
+                  variant="default"
+                  size="icon"
+                  onClick={() => onSwipe('right')}
+                  className="h-14 w-14 rounded-full shadow-lg bg-success hover:bg-success/90"
+                >
+                  <Check className="w-6 h-6" />
+                  <span className="sr-only">Garder</span>
+                </Button>
+              </div>
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-[2rem] shadow-2xl">
               <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
