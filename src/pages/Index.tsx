@@ -124,13 +124,13 @@ const Index = () => {
   if (!started) {
     return (
       <>
-        <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 space-y-8">
+        <div className="min-h-screen flex flex-col items-center justify-center gradient-bg p-4 space-y-12">
           <div className="absolute top-4 right-4 flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={handleProfile}
-              className="rounded-full"
+              className="rounded-full hover:bg-secondary/80"
             >
               <User className="w-5 h-5" />
               <span className="sr-only">Profil</span>
@@ -138,18 +138,18 @@ const Index = () => {
             <SettingsMenu />
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-center">
-            Swipe & Organise
-          </h1>
-          
-          <div className="text-center space-y-6">
-            <p className="text-muted-foreground text-lg">
+          <div className="space-y-8 text-center max-w-md">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Swipe & Organise
+            </h1>
+            
+            <p className="text-muted-foreground text-lg px-4">
               Swipez à gauche pour supprimer, à droite pour garder
             </p>
             
             <div className="relative">
               <ArrowLeftRight 
-                className="w-12 h-12 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
+                className="w-12 h-12 text-primary animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
                 strokeWidth={1.5}
               />
             </div>
@@ -158,7 +158,7 @@ const Index = () => {
           <Button 
             onClick={handleStart}
             size="lg"
-            className="mt-8 text-lg px-8"
+            className="mt-8 text-lg px-12 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-xl"
           >
             Commencer
           </Button>
@@ -179,9 +179,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/20 p-4">
+    <div className="min-h-screen flex flex-col gradient-bg p-4">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-sm font-medium text-muted-foreground">
+        <h2 className="text-sm font-medium text-primary">
           {demoImages.length - currentIndex} restantes
         </h2>
         <div className="flex items-center space-x-2">
@@ -190,7 +190,7 @@ const Index = () => {
             size="icon"
             onClick={handleUndo}
             disabled={history.length === 0}
-            className="rounded-full"
+            className="rounded-full border-primary/20 hover:bg-primary/10"
           >
             <Undo2 className="w-4 h-4" />
             <span className="sr-only">Annuler la dernière action</span>
@@ -199,7 +199,7 @@ const Index = () => {
             variant="ghost"
             size="icon"
             onClick={handleProfile}
-            className="rounded-full"
+            className="rounded-full hover:bg-secondary/80"
           >
             <User className="w-5 h-5" />
             <span className="sr-only">Profil</span>
@@ -213,10 +213,10 @@ const Index = () => {
         total={demoImages.length}
       />
       
-      <div className="flex-1 flex items-center justify-center my-8">
+      <div className="flex-1 flex items-center justify-center my-8 px-4">
         <div className="relative w-full max-w-md aspect-[3/4]">
           {isPreloading ? (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-card rounded-xl shadow-lg">
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-card rounded-[2rem] shadow-2xl">
               <p className="text-muted-foreground">Chargement des images...</p>
             </div>
           ) : loadedImages.length > 0 && currentIndex < demoImages.length ? (
@@ -225,8 +225,10 @@ const Index = () => {
               onSwipe={handleSwipe}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-xl shadow-lg">
-              <h2 className="text-2xl font-semibold mb-4">Terminé !</h2>
+            <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-[2rem] shadow-2xl">
+              <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Terminé !
+              </h2>
               <p className="text-muted-foreground">
                 Vous avez trié toutes vos photos.
               </p>
@@ -235,7 +237,7 @@ const Index = () => {
                   setCurrentIndex(0);
                   setHistory([]);
                 }}
-                className="mt-8"
+                className="mt-8 rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
               >
                 Recommencer
               </Button>
