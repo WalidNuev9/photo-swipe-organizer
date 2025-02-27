@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Undo2, User, Trash2, Share, Bookmark, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -46,7 +45,7 @@ const SortingInterface: React.FC<SortingInterfaceProps> = ({
 
   return (
     <div className="min-h-screen flex flex-col gradient-bg p-4">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-medium text-primary">
           {totalImages - currentIndex} restantes
         </h2>
@@ -79,8 +78,8 @@ const SortingInterface: React.FC<SortingInterfaceProps> = ({
         total={totalImages}
       />
       
-      <div className="flex-1 flex items-center justify-center my-8 px-4">
-        <div className="relative w-full max-w-md aspect-[3/4]">
+      <div className="flex-1 flex items-center justify-center my-4">
+        <div className="relative w-full h-[70vh] max-w-xl">
           {isPreloading ? (
             <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-card rounded-[2rem] shadow-2xl">
               <p className="text-muted-foreground">Chargement des images...</p>
@@ -91,47 +90,9 @@ const SortingInterface: React.FC<SortingInterfaceProps> = ({
                 imageUrl={imageUrl}
                 onSwipe={onSwipe}
               />
-              <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-4 pb-6">
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => onSwipe('left')}
-                  className="h-14 w-14 rounded-full shadow-lg bg-danger hover:bg-danger/90"
-                >
-                  <Trash2 className="w-6 h-6" />
-                  <span className="sr-only">Supprimer</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleShare}
-                  className="h-14 w-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/90"
-                >
-                  <Share className="w-6 h-6" />
-                  <span className="sr-only">Partager</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleBookmark}
-                  className="h-14 w-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/90"
-                >
-                  <Bookmark className="w-6 h-6" />
-                  <span className="sr-only">Marquer</span>
-                </Button>
-                <Button
-                  variant="default"
-                  size="icon"
-                  onClick={() => onSwipe('right')}
-                  className="h-14 w-14 rounded-full shadow-lg bg-success hover:bg-success/90"
-                >
-                  <Check className="w-6 h-6" />
-                  <span className="sr-only">Garder</span>
-                </Button>
-              </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center p-8 bg-card rounded-[2rem] shadow-2xl">
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-card rounded-[2rem] shadow-2xl">
               <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Terminé !
               </h2>
@@ -148,6 +109,52 @@ const SortingInterface: React.FC<SortingInterfaceProps> = ({
           )}
         </div>
       </div>
+
+      {imageUrl && !isPreloading && (
+        <div className="fixed bottom-0 left-0 right-0 pb-8 pt-4 px-4 bg-gradient-to-t from-background to-transparent">
+          <div className="flex justify-around items-center max-w-xl mx-auto">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleShare}
+              className="h-12 w-12 rounded-full shadow-lg bg-secondary hover:bg-secondary/90"
+            >
+              <Share className="w-5 h-5" />
+              <span className="sr-only">Partager</span>
+            </Button>
+            
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={() => onSwipe('left')}
+              className="h-16 w-16 rounded-full shadow-lg bg-danger hover:bg-danger/90"
+            >
+              <Trash2 className="w-7 h-7" />
+              <span className="sr-only">Supprimer</span>
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleBookmark}
+              className="h-12 w-12 rounded-full shadow-lg bg-secondary hover:bg-secondary/90"
+            >
+              <Bookmark className="w-5 h-5" />
+              <span className="sr-only">Marquer</span>
+            </Button>
+            
+            <Button
+              variant="default"
+              size="icon"
+              onClick={() => onSwipe('right')}
+              className="h-16 w-16 rounded-full shadow-lg bg-success hover:bg-success/90"
+            >
+              <Check className="w-7 h-7" />
+              <span className="sr-only">Garder</span>
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
